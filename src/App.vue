@@ -648,8 +648,6 @@ function initQuests() {
 }
 
 function loadCharacters() {
-  // console.log('loadCharacters:', apiKey.value)
-
   fetch(`${GW2_API}/characters?access_token=${apiKey.value}`)
     .then((res) => res.json())
     .then((json) => {
@@ -662,7 +660,6 @@ function loadCharacters() {
             for (let i = 0; i <= 247; i++) {
               uQuests[i] = 0;
             }
-
             json.forEach((j) => {
               if (typeof questsOrder[j] !== 'undefined' && questExcluded.indexOf(j) < 0) {
                 uQuests[questsOrder[j]] = j;
@@ -678,8 +675,6 @@ function loadCharacters() {
       });
     })
     .catch((err) => (error.value = err))
-
-  // console.log(error)
 }
 
 function getSeasonClass(q) {
@@ -711,131 +706,86 @@ function getSeasonClass(q) {
 </script>
 
 <template>
+  <h1 class="container mx-auto my-6 text-3xl font-semibold">Histoire de mes personnages</h1>
   <div v-if="error">
     <h2>Error</h2>
     {{ JSON.stringify(error) }}
   </div>
-  <div>
-    <input type="text" placeholder="API key" v-model="apiKey" />
-    <button @click="loadCharacters">Charger</button>
+  <div class="container mx-auto my-6 flex gap-4 items-center">
+    <input type="text" placeholder="API key" v-model="apiKey" class="input input-bordered w-full" />
+    <button @click="loadCharacters" class="btn">Charger</button>
   </div>
-
-  <div>
-    <div v-if="false" v-for="q in quests" :class="{ missing: (typeof questsOrder[q.id] == 'undefined') }">
-      [{{ q.id }}] <strong>{{ q.name }}</strong>
-    </div>
+  <div class="container mx-auto my-6">
     <div v-for="(uq, c) in userQuests">
-      <h2>{{ c }}</h2>
-      <ul>
+      <h2 class="text-2xl font-semibold mb-4">{{ c }}</h2>
+      <ul class="flex flex-wrap gap-1 mb-8">
         <li v-for="(q, i) in uq" :key="c + q + i" class="story"
           :class="getSeasonClass(i) + ' ' + ((q > 0) ? 'story--done' : '')">
         </li>
       </ul>
-      <hr>
     </div>
   </div>
 </template>
 
 <style scoped>
-strong {
-  font-weight: bold;
-}
-
-ul {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  gap: 4px;
-}
-
-[data-order="false"],
-.missing {
-  background: lightyellow;
-}
-
 .story {
-  display: block;
-  aspect-ratio: 1/1;
-  width: 2rem;
-  background: lightgray;
-  overflow: hidden;
-  opacity: .33;
+  @apply bg-gray-200 text-white block aspect-square w-8 overflow-hidden opacity-30 rounded;
 }
 
 .story:before {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .75rem;
-  font-weight: bold;
+  @apply w-full h-full flex items-center justify-center text-xs font-bold;
 }
 
 .story--done {
-  opacity: 1;
+  @apply opacity-100;
 }
 
-.story--s00 {
-  background: red;
+.story--s00,
+.story--s01,
+.story--s02 {
+  @apply bg-red-600;
 }
 
 .story--s00:before {
   content: 'HP';
 }
 
-.story--s01 {
-  background: green;
-}
-
 .story--s01:before {
   content: 'S01';
-}
-
-.story--s02 {
-  background: yellow;
 }
 
 .story--s02:before {
   content: 'S02';
 }
 
-.story--s03 {
-  background: purple;
+.story--s03,
+.story--hot {
+  @apply bg-green-600;
 }
 
 .story--s03:before {
   content: 'S03';
 }
 
-.story--s04 {
-  background: brown;
-}
-
-.story--s04:before {
-  content: 'S04';
-}
-
-.story--hot {
-  background: lightgreen;
-}
-
 .story--hot:before {
   content: 'HoT';
 }
 
-.story--pof {
-  background: pink;
+.story--pof,
+.story--s04 {
+  @apply bg-rose-500;
 }
 
 .story--pof:before {
   content: 'PoF';
 }
 
+.story--s04:before {
+  content: 'S04';
+}
+
 .story--ibs {
-  background: lightblue;
+  @apply bg-blue-600;
 }
 
 .story--ibs:before {
