@@ -4,7 +4,7 @@ import { ref } from 'vue';
 const GW2_API = 'https://api.guildwars2.com/v2';
 const LANG = 'fr';
 
-const apiKey = ref('BECC9FE0-FB9F-0C46-81DB-F864E9216DD1E5B15E0A-FDB9-490C-B92C-F75D754F98C4')
+const apiKey = ref(null)
 const characters = ref(null);
 const error = ref(null);
 const userQuests = ref({});
@@ -648,6 +648,7 @@ function initQuests() {
 }
 
 function loadCharacters() {
+  error.value = null;
   fetch(`${GW2_API}/characters?access_token=${apiKey.value}`)
     .then((res) => res.json())
     .then((json) => {
@@ -707,33 +708,73 @@ function getSeasonClass(q) {
 
 <template>
   <h1 class="container mx-auto my-6 text-3xl font-semibold">Histoire de mes personnages</h1>
-  <div v-if="error">
-    <h2>Error</h2>
-    {{ JSON.stringify(error) }}
+  <div v-if="error" class="container mx-auto my-6">
+    <div class="alert alert-error shadow-lg">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+          viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Error: {{ JSON.stringify(error) }}</span>
+      </div>
+    </div>
   </div>
   <div class="container mx-auto my-6 flex gap-4 items-center">
-    <input type="text" placeholder="API key" v-model="apiKey" class="input input-bordered w-full" />
+    <input type="text" placeholder="Clé API Guild Wars 2" v-model="apiKey" class="input input-bordered w-full" />
     <button @click="loadCharacters" class="btn">Charger</button>
   </div>
   <div class="container mx-auto my-6">
     <div v-for="(uq, c) in userQuests">
-      <h2 class="text-2xl font-semibold mb-4">{{ c }}</h2>
+      <h2 class="mb-4">
+        <label :for="c" class="btn btn-outline gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          {{ c }}
+        </label>
+      </h2>
       <ul class="flex flex-wrap gap-1 mb-8">
-        <li v-for="(q, i) in uq" :key="c + q + i" class="story"
+        <li v-for="(q, i) in uq" :key="c + q + i" class="story tooltip"
+          :data-tip="(typeof quests[q] !== 'undefined') ? quests[q].name : null"
           :class="getSeasonClass(i) + ' ' + ((q > 0) ? 'story--done' : '')">
+          <span></span>
         </li>
       </ul>
     </div>
+  </div>
+
+  <div v-for="(uq, c) in userQuests">
+    <input type="checkbox" :id="c" class="modal-toggle" />
+    <label :for="c" class="modal cursor-pointer">
+      <label class="modal-box relative rounded-none" for="">
+        <h3 class="text-2xl font-bold">{{ c }}</h3>
+        <div class="my-4" v-for="q in uq">
+          <div v-if="(typeof quests[q] !== 'undefined')">
+            <h4 class="text-lg font-bold mb-2 text-gray-500">{{ quests[q].name }}</h4>
+            <ul v-if="quests[q].goals">
+              <li v-for="goal in quests[q].goals" class="mb-4">
+                <div v-if="goal.active" class="font-semibold italic mb-2">{{ goal.active }}</div>
+                <div v-if="goal.complete">{{ goal.complete }}</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </label>
+    </label>
   </div>
 </template>
 
 <style scoped>
 .story {
-  @apply bg-gray-200 text-white block aspect-square w-8 overflow-hidden opacity-30 rounded;
+  @apply bg-gray-200 text-white block aspect-square w-8 opacity-30;
 }
 
-.story:before {
-  @apply w-full h-full flex items-center justify-center text-xs font-bold;
+.story>span:before {
+  @apply w-full h-full flex items-center justify-center text-xs font-bold absolute top-0 left-0;
 }
 
 .story--done {
@@ -746,15 +787,15 @@ function getSeasonClass(q) {
   @apply bg-red-600;
 }
 
-.story--s00:before {
+.story--s00>span:before {
   content: 'HP';
 }
 
-.story--s01:before {
+.story--s01>span:before {
   content: 'S01';
 }
 
-.story--s02:before {
+.story--s02>span:before {
   content: 'S02';
 }
 
@@ -763,11 +804,11 @@ function getSeasonClass(q) {
   @apply bg-green-600;
 }
 
-.story--s03:before {
+.story--s03>span:before {
   content: 'S03';
 }
 
-.story--hot:before {
+.story--hot>span:before {
   content: 'HoT';
 }
 
@@ -776,11 +817,11 @@ function getSeasonClass(q) {
   @apply bg-rose-500;
 }
 
-.story--pof:before {
+.story--pof>span:before {
   content: 'PoF';
 }
 
-.story--s04:before {
+.story--s04>span:before {
   content: 'S04';
 }
 
@@ -788,7 +829,7 @@ function getSeasonClass(q) {
   @apply bg-blue-600;
 }
 
-.story--ibs:before {
+.story--ibs>span:before {
   content: 'ÉdG';
 }
 </style>
