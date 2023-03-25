@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 const GW2_API = 'https://api.guildwars2.com/v2';
-const LANG = 'en';
+const LANG = 'fr';
 
 const apiKey = ref('BECC9FE0-FB9F-0C46-81DB-F864E9216DD1E5B15E0A-FDB9-490C-B92C-F75D754F98C4')
 const characters = ref(null);
@@ -625,25 +625,19 @@ const questsOrder = {
 };
 const questExcluded = [587, 600, 602, 606];  // Calm in the Storm (placeholder between lasts IBS episodes)
 
-// Story order: https://www.reddit.com/r/Guildwars2/comments/85l5d2/personal_story_flow_chart/
-// Personnal story end <= 358
-
 initQuests();
 
 function initQuests() {
   fetch(`${GW2_API}/quests`)
     .then((res) => res.json())
     .then((ids) => {
-      // console.log(ids.length)
       const chunkSize = 200;
       for (let i = 0; i < ids.length; i += chunkSize) {
         const chunk = ids.slice(i, i + chunkSize);
         const _ids = chunk.join(',');
-        // console.log('ids:', _ids)
         fetch(`${GW2_API}/quests?ids=${_ids}&lang=${LANG}`)
           .then((res) => res.json())
           .then(json => {
-            // console.log('quests:', json)
             json.forEach(q => {
               quests.value[q.id] = q;
             })
