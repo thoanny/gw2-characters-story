@@ -625,6 +625,8 @@ const questsOrder = {
 };
 const questExcluded = [587, 600, 602, 606];  // Calm in the Storm (placeholder between lasts IBS episodes)
 
+const questsKey = [114];
+
 initQuests();
 
 function initQuests() {
@@ -704,6 +706,14 @@ function getSeasonClass(q) {
 
 }
 
+function getQuestKeyClass(q) {
+  if (questsKey.indexOf(q) >= 0) {
+    return 'story--key';
+  }
+
+  return '';
+}
+
 </script>
 
 <template>
@@ -740,7 +750,7 @@ function getSeasonClass(q) {
       <ul class="flex flex-wrap gap-1 mb-8">
         <li v-for="(q, i) in uq" :key="c + q + i" class="story tooltip"
           :data-tip="(typeof quests[q] !== 'undefined') ? quests[q].name : null"
-          :class="getSeasonClass(i) + ' ' + ((q > 0) ? 'story--done' : '')">
+          :class="getSeasonClass(i) + ' ' + ((q > 0) ? 'story--done' : '') + ' ' + getQuestKeyClass(q)" :data-quest="q">
           <span></span>
         </li>
       </ul>
@@ -770,7 +780,7 @@ function getSeasonClass(q) {
 
 <style scoped>
 .story {
-  @apply bg-gray-200 text-white block aspect-square w-8 opacity-30;
+  @apply bg-gray-200 text-white block aspect-square w-8 opacity-30 rounded;
 }
 
 .story>span:before {
@@ -831,5 +841,9 @@ function getSeasonClass(q) {
 
 .story--ibs>span:before {
   content: 'ÉdG';
+}
+
+.story--key {
+  @apply mask mask-hexagon;
 }
 </style>
