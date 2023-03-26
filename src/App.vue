@@ -624,8 +624,13 @@ const questsOrder = {
   598: 247,
 };
 const questExcluded = [587, 600, 602, 606];  // Calm in the Storm (placeholder between lasts IBS episodes)
-
-const questsKey = [114];
+const questsOrderKeys = [
+  5,
+  15,
+  24,
+  105,
+  122
+];
 
 initQuests();
 
@@ -706,8 +711,8 @@ function getSeasonClass(q) {
 
 }
 
-function getQuestKeyClass(q) {
-  if (questsKey.indexOf(q) >= 0) {
+function getQuestOrderKeyClass(i) {
+  if (questsOrderKeys.indexOf(i) >= 0) {
     return 'story--key';
   }
 
@@ -747,10 +752,11 @@ function getQuestKeyClass(q) {
           {{ c }}
         </label>
       </h2>
-      <ul class="flex flex-wrap gap-1 mb-8">
+      <ul class="flex flex-wrap gap-2 mb-8">
         <li v-for="(q, i) in uq" :key="c + q + i" class="story tooltip"
           :data-tip="(typeof quests[q] !== 'undefined') ? quests[q].name : null"
-          :class="getSeasonClass(i) + ' ' + ((q > 0) ? 'story--done' : '') + ' ' + getQuestKeyClass(q)" :data-quest="q">
+          :class="getSeasonClass(i) + ' ' + ((q > 0) ? 'story--done' : '') + ' ' + getQuestOrderKeyClass(i)"
+          :data-quest="q">
           <span></span>
         </li>
       </ul>
@@ -791,10 +797,20 @@ function getQuestKeyClass(q) {
   @apply opacity-100;
 }
 
+.story--key {
+  @apply ring ring-offset-base-100 ring-offset-2;
+}
+
 .story--s00,
 .story--s01,
 .story--s02 {
   @apply bg-red-600;
+}
+
+.story--s00.story--key,
+.story--s01.story--key,
+.story--s02.story--key {
+  @apply ring-red-600;
 }
 
 .story--s00>span:before {
@@ -814,6 +830,11 @@ function getQuestKeyClass(q) {
   @apply bg-green-600;
 }
 
+.story--s03.story--key,
+.story--hot.story--key {
+  @apply ring-green-600;
+}
+
 .story--s03>span:before {
   content: 'S03';
 }
@@ -825,6 +846,11 @@ function getQuestKeyClass(q) {
 .story--pof,
 .story--s04 {
   @apply bg-rose-500;
+}
+
+.story--pof.story--key,
+.story--s04.story--key {
+  @apply ring-rose-500;
 }
 
 .story--pof>span:before {
@@ -839,11 +865,11 @@ function getQuestKeyClass(q) {
   @apply bg-blue-600;
 }
 
-.story--ibs>span:before {
-  content: 'ÉdG';
+.story--ibs.story--key {
+  @apply ring-blue-600;
 }
 
-.story--key {
-  @apply mask mask-hexagon;
+.story--ibs>span:before {
+  content: 'ÉdG';
 }
 </style>
