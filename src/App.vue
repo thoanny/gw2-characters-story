@@ -735,10 +735,10 @@ function getQuestOrderKeyClass(i) {
       </div>
     </div>
   </div>
-  <div class="container mx-auto my-6 flex gap-4 items-center">
+  <form @submit.prevent="loadCharacters" class="container mx-auto my-6 flex gap-4 items-center">
     <input type="text" placeholder="Clé API Guild Wars 2" v-model="apiKey" class="input input-bordered w-full" />
-    <button @click="loadCharacters" class="btn">Charger</button>
-  </div>
+    <button type="submit" class="btn">Charger</button>
+  </form>
   <div class="container mx-auto my-6">
     <div v-for="(uq, c) in userQuests">
       <h2 class="mb-4">
