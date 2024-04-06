@@ -656,6 +656,8 @@ function initQuests() {
 
 function loadCharacters() {
   error.value = null;
+  // Réinitialiser les personnages au clic sur le bouton
+  // Ajouter : "Potentiellement X clé à récupérer"
   fetch(`${GW2_API}/characters?access_token=${apiKey.value}`)
     .then((res) => res.json())
     .then((json) => {
